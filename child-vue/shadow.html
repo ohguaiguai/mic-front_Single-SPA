@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <p>hello world</p>
+      <div id="shadow"></div>
+    </div>
+    <script>
+      let shadowDOM = shadow.attachShadow({ mode: 'closed' }); // closed表示外界无法访问
+      let pElm = document.createElement('p');
+      pElm.innerHTML = 'zhangxing';
+      let styleElem = document.createElement('style');
+
+      styleElem.textContent = `p{color: red}`; // 不会影响外面的p的样式
+      shadowDOM.appendChild(styleElem);
+      shadowDOM.appendChild(pElm);
+
+      // document.body.appendChild(pElm);// 不能放在body中
+    </script>
+  </body>
+</html>

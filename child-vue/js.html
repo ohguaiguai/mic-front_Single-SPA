@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // js沙箱
+      // 快照沙箱： 1年前拍一张照片，现在再拍一张，找出其中的差别保存起来，如果想回到1年前那么就去掉这些差别，如果想回到现在就加上这些差别
+      class SnapshotSandBox {
+        constructor() {
+          this.proxy = window;
+          this.modifyPropsMap = {}; // 记录修改
+          this.active();
+        }
+        active() {
+          this.windowSnapshot = {}; // 拍照
+          for (const prop in window) {
+            if (window.hasOwnProperty(prop)) {
+              this.windowSnapshot[prop] = window[prop];
+            }
+          }
+          // 还原
+          Object.keys(this.modifyPropsMap).forEach((p) => {
+            window[p] = this.modifyPropsMap[p];
+          });
+        }
+        inactive() {
+          for (const prop in window) {
+            if (window.hasOwnProperty(prop)) {
+              // 现在的window和上一次的window
+              if (window[prop] !== this.windowSnapshot[prop]) {
+                this.modifyPropsMap[prop] = window[prop]; // 保存差别
+                window[prop] = this.windowSnapshot[prop]; // 失活时恢复window window.a = undefined
+              }
+            }
+          }
+        }
+      }
+
+      let sandbox = new SnapshotSandBox();
+
+      ((window) => {
+        window.a = 1;
+        window.b = 2;
+        console.log(window.a, window.b);
+        sandbox.inactive();
+        console.log(window.a, window.b);
+        sandbox.active();
+        console.log(window.a, window.b);
+      })(sandbox.proxy);
+
+      // 如果是多个子应用就不能使用这种方式了, 可以使用es6
+
+      // 代理沙箱，可以实现多应用沙箱。
+    </script>
+  </body>
+</html>
